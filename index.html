@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Travel Live Location</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #050505;
+            color: white;
+            text-align: center;
+        }
+
+        .box {
+            width: 90%;
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 25px;
+            border: 2px solid #00ff66;
+            border-radius: 15px;
+            background: #111;
+        }
+
+        h1 {
+            color: #00ff66;
+            font-size: 32px;
+        }
+
+        p {
+            font-size: 18px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 10px;
+            background: #00aa55;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 17px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #00cc66;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #050505;
+            border-radius: 8px;
+            line-height: 1.8;
+        }
+
+        #mapLink {
+            display: block;
+            margin-top: 15px;
+            color: #00ff66;
+            font-size: 18px;
+        }
+
+        .warning {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #cccccc;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="box">
+
+        <h1>📍 Travel Location</h1>
+
+        <p>
+            নিজের ফোনের Location দেখুন
+        </p>
+
+        <input
+            type="tel"
+            id="phone"
+            placeholder="ফোন নম্বর দিন"
+        >
+
+        <button onclick="startLocation()">
+            📍 আমার Location দেখাও
+        </button>
+
+        <div id="result">
+            Location এখনো নেওয়া হয়নি।
+        </div>
+
+        <a
+            id="mapLink"
+            href="#"
+            target="_blank">
+        </a>
+
+        <div class="warning">
+            🔒 Location দেখানোর জন্য ফোনের মালিককে
+            Browser-এর Location Permission দিতে হবে।
+        </div>
+
+    </div>
+
+
+    <script>
+
+        function startLocation() {
+
+            const phone =
+                document.getElementById("phone").value;
+
+            const result =
+                document.getElementById("result");
+
+            const mapLink =
+                document.getElementById("mapLink");
+
+
+            /* ফোন নম্বর দেওয়া হয়েছে কি না */
+
+            if (phone === "") {
+
+                result.innerHTML =
+                    "❌ আগে ফোন নম্বর দিন।";
+
+                return;
+            }
+
+
+            /* Browser Location support করে কি না */
+
+            if (!navigator.geolocation) {
+
+                result.innerHTML =
+                    "❌ আপনার Browser Location support করে না।";
+
+                return;
+            }
+
+
+            result.innerHTML =
+                "📍 আপনার Location নেওয়া হচ্ছে...";
+
+
+            /*
+                ফোনের Location নেওয়া
+            */
+
+            navigator.geolocation.getCurrentPosition(
+
+                function(position) {
+
+                    const latitude =
+                        position.coords.latitude;
+
+                    const longitude =
+                        position.coords.longitude;
+
+                    const accuracy =
+                        position.coords.accuracy;
+
+
+                    /*
+                        Location দেখানো
+                    */
+
+                    result.innerHTML =
+                        "📱 ফোন: " + phone +
+                        "<br><br>" +
+
+                        "📍 Latitude: " +
+                        latitude +
+
+                        "<br>" +
+
+                        "📍 Longitude: " +
+                        longitude +
+
+                        "<br>" +
+
+                        "🎯 Accuracy: প্রায় " +
+                        Math.round(accuracy) +
+                        " মিটার";
+
+
+                    /*
+                        Google Maps Link
+                    */
+
+                    const mapURL =
+                        "https://www.google.com/maps?q=" +
+                        latitude +
+                        "," +
+                        longitude;
+
+
+                    mapLink.href = mapURL;
+
+                    mapLink.innerHTML =
+                        "🗺️ Google Maps-এ Location দেখুন";
+
+                },
+
+
+                /*
+                    Location পাওয়া না গেলে
+                */
+
+                function(error) {
+
+                    if (error.code === 1) {
+
+                        result.innerHTML =
+                            "❌ Location Permission দেওয়া হয়নি।";
+
+                    }
+
+                    else if (error.code === 2) {
+
+                        result.innerHTML =
+                            "❌ Location পাওয়া যাচ্ছে না।";
+
+                    }
+
+                    else if (error.code === 3) {
+
+                        result.innerHTML =
+                            "❌ Location নিতে সময় শেষ হয়ে গেছে।";
+
+                    }
+
+                    else {
+
+                        result.innerHTML =
+                            "❌ Location নিতে সমস্যা হয়েছে।";
+
+                    }
+
+                },
+
+
+                /*
+                    Location Settings
+                */
+
+                {
+                    enableHighAccuracy: true,
+
+                    timeout: 10000,
+
+                    maximumAge: 0
+                }
+
+            );
+
+        }
+
+    </script>
+
+</body>
+</html>
